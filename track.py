@@ -18,7 +18,7 @@ from pathlib import Path
 import cv2
 import torch
 import torch.backends.cudnn as cudnn
-
+from gt_utils import get_object_frame
 
 
 palette = (2 ** 11 - 1, 2 ** 15 - 1, 2 ** 20 - 1)
@@ -76,6 +76,24 @@ def draw_boxes(img, bbox, identities=None, offset=(0, 0)):
                                  t_size[1] + 4), cv2.FONT_HERSHEY_PLAIN, 2, [255, 255, 255], 2)
     return img
 
+# def draw_gt_boxes(img, bbox, identities=None, offset=(0, 0)):
+#     for i, box in enumerate(bbox):
+#         x1, y1, x2, y2 = [int(i) for i in box]
+#         x1 += offset[0]
+#         x2 += offset[0]
+#         y1 += offset[1]
+#         y2 += offset[1]
+#         # box text and bar
+#         id = int(identities[i]) if identities is not None else 0
+#         color = compute_color_for_labels(id)
+#         label = '{}{:d}'.format("", id)
+#         t_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_PLAIN, 2, 2)[0]
+#         cv2.rectangle(img, (x1, y1), (x2, y2), color, 3)
+#         cv2.rectangle(
+#             img, (x1, y1), (x1 + t_size[0] + 3, y1 + t_size[1] + 4), color, -1)
+#         cv2.putText(img, label, (x1, y1 +
+#                                  t_size[1] + 4), cv2.FONT_HERSHEY_PLAIN, 2, [255, 255, 255], 2)
+#     return img
 
 def detect(opt):
     out, source, yolo_weights, deep_sort_weights, show_vid, save_vid, save_txt, imgsz, evaluate = \
@@ -139,6 +157,8 @@ def detect(opt):
     txt_file_name = source.split('/')[-1].split('.')[0]
     txt_path = str(Path(out)) + '/' + txt_file_name + '.txt'
 
+    group_frame = get_object_frame("gt.txt")
+    
     for frame_idx, (path, img, im0s, vid_cap) in enumerate(dataset):
         img = torch.from_numpy(img).to(device)
         img = img.half() if half else img.float()  # uint8 to fp16/32
@@ -193,7 +213,7 @@ def detect(opt):
                 outputs = deepsort.update(xywhs, confss, im0)
 
                 # draw boxes for visualization
-                if len(outputs) > 0:
+                if len(outputs) > 0 and opt.mode == "predict":
                     bbox_xyxy = outputs[:, :4]
                     identities = outputs[:, -1]
                     draw_boxes(im0, bbox_xyxy, identities)
@@ -211,6 +231,11 @@ def detect(opt):
                             with open(txt_path, 'a') as f:
                                 f.write(('%g ' * 10 + '\n') % (frame_idx, identity, bbox_top,
                                                             bbox_left, bbox_w, bbox_h, -1, -1, -1, -1))  # label format
+                if(opt.mode == "gt"):
+                    persons_inf = group_frame[frame_idx+1]
+                    bbox_gt_xyxy = list(map(lambda x: x.xywh_to_xyxy(), persons_inf))
+                    identities_gt = list(map(lambda x: x.track_id, persons_inf))
+                    draw_boxes(im0, bbox_gt_xyxy, identities_gt)
 
             else:
                 deepsort.increment_ages()
@@ -270,8 +295,9 @@ if __name__ == '__main__':
     parser.add_argument('--augment', action='store_true', help='augmented inference')
     parser.add_argument('--evaluate', action='store_true', help='augmented inference')
     parser.add_argument("--config_deepsort", type=str, default="deep_sort_pytorch/configs/deep_sort.yaml")
+    parser.add_argument("--mode", type=str, default="predict", help='options: predict|gt')
     args = parser.parse_args()
     args.img_size = check_img_size(args.img_size)
-
+                        
     with torch.no_grad():
         detect(args)
