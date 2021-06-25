@@ -119,3 +119,8 @@ If you find this project useful in your research, please consider cite:
 
 For more detailed information about the algorithms and their corresponding lisences used in this project access their official github implementations.
 
+
+# draw pred and gt boxes:
+ File track.py:
+- Comment line 298
+- Remove opt.mode in line 216, 234
