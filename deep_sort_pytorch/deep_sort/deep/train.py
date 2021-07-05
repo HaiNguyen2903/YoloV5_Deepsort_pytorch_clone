@@ -30,7 +30,7 @@ root = args.data_dir
 train_dir = os.path.join(root, "train")
 test_dir = os.path.join(root, "test")
 transform_train = torchvision.transforms.Compose([
-    torchvision.transforms.RandomCrop((128, 64), padding=4),
+    torchvision.transforms.RandomCrop((128, 64), padding=4, pad_if_needed=True),
     torchvision.transforms.RandomHorizontalFlip(),
     torchvision.transforms.ToTensor(),
     torchvision.transforms.Normalize(
@@ -53,6 +53,7 @@ testloader = torch.utils.data.DataLoader(
 num_classes = max(len(trainloader.dataset.classes),
                   len(testloader.dataset.classes))
 
+print("Num class:", num_classes)
 # net definition
 start_epoch = 0
 net = Net(num_classes=num_classes)
@@ -63,7 +64,10 @@ if args.resume:
     checkpoint = torch.load("./checkpoint/ckpt.t7")
     # import ipdb; ipdb.set_trace()
     net_dict = checkpoint['net_dict']
-    net.load_state_dict(net_dict)
+    model_dict = net.state_dict()
+    pretrained_dict = {k: v for k, v in net_dict.items() if k not in ["classifier.4.weight", "classifier.4.bias"]}
+    model_dict.update(pretrained_dict)
+    net.load_state_dict(model_dict)
     best_acc = checkpoint['acc']
     start_epoch = checkpoint['epoch']
 net.to(device)
