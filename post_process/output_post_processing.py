@@ -42,7 +42,7 @@ def filter_boxes(pred_file, area_file):
 			p = line.strip().split(",")
 			x1, y1, w, h = list(map(float, p[2:6]))
 			if(is_in_invalid_area([x1, y1, w, h], rects)):
-				print(x1, y1, x2, y2)
+				print(x1, y1, w, h)
 				continue
 			pp_out.append(line)
 	with open("pp_" + pred_file, "wt") as f:
