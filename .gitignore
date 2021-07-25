@@ -1,2 +1,5 @@
 .vscode/
 generate_data/reid_dataset
+dataset/
+yolov5/pretrained/crowdhuman_yolov5m2.pt.zip
+dataset2/

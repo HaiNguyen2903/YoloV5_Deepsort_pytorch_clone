@@ -23,7 +23,7 @@ def extract_frame(vid_path, save_folder):
         ret, frame = cap.read()
         if ret == False:
             break
-        cv2.imwrite(os.path.join(save_folder, 'frame_{:06d}.PNG'.format(i)), frame)
+        cv2.imwrite(os.path.join(save_folder, 'frame_{:06d}.jpg'.format(i)), frame)
         print('Extracting frame {}'.format(i))
         i+=1
 
