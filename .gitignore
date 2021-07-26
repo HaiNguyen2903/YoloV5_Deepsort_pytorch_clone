@@ -10,3 +10,4 @@ yolov5/debug.ipynb
 generate_data/tracking.ipynb
 generate_data/__pycache__
 yolov5/__pycache__
+yolov5/models/__pycache__
