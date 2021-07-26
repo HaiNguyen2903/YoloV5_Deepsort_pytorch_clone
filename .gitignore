@@ -3,4 +3,8 @@ generate_data/reid_dataset
 dataset/
 yolov5/pretrained/crowdhuman_yolov5m2.pt.zip
 dataset2/
-yolov5/checkpoints
+yolov5/checkpoints/
+combine_dataset/
+__pycache__/
+yolov5/debug.ipynb
+generate_data/tracking.ipynb

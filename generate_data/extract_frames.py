@@ -8,11 +8,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--vid_path", default = 1, help="path to video need to extract")
 parser.add_argument("--save_dir", default = 2, help="path to extract dir")
 
-# video_path = '../dataset/30min/NVR-CH01_S20210607-113251_E20210607-120452.mp4'
-# assert os.path.isfile(video_path)
-# saved_folder = '../dataset/frame_data_2/'
-# assert os.path.isdir(saved_folder)
-
 def extract_frame(vid_path, save_folder):
     assert os.path.isfile(vid_path)
     assert os.path.isdir(save_folder)
