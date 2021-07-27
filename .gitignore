@@ -11,3 +11,9 @@ generate_data/tracking.ipynb
 generate_data/__pycache__
 yolov5/__pycache__
 yolov5/models/__pycache__
+combine_dataset/
+yolov5/runs
+yolov5/__pycache__/
+yolov5/checkpoints
+yolov5/wandb
+generate_data/tracking.ipynb

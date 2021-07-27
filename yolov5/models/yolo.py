@@ -74,17 +74,11 @@ class Model(nn.Module):
         super(Model, self).__init__()
         if isinstance(cfg, dict):
             self.yaml = cfg  # model dict
-           
-            # print(cfg)
-            # exit()
-
         else:  # is *.yaml
             import yaml  # for torch hub
             self.yaml_file = Path(cfg).name
             with open(cfg) as f:
                 self.yaml = yaml.safe_load(f)  # model dict
-                # print(f)
-                # exit()
 
         # Define model
         ch = self.yaml['ch'] = self.yaml.get('ch', ch)  # input channels
